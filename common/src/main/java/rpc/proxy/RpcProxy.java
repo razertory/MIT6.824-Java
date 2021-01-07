@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import rpc.common.RpcEncoder;
 import rpc.common.RpcRequest;
-import rpc.io.JSONSerializer;
+import rpc.common.RpcEncoder.JSONRpcSerializer;
 import rpc.io.NettyClient;
 
 /**
@@ -68,7 +68,7 @@ public class RpcProxy {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     ChannelPipeline pipeline = socketChannel.pipeline();
-                    pipeline.addFirst(new RpcEncoder(RpcRequest.class, new JSONSerializer()));
+                    pipeline.addFirst(new RpcEncoder(RpcRequest.class, new JSONRpcSerializer()));
                     pipeline.addLast(new StringDecoder());
                     pipeline.addLast(nettyClient);
                 }

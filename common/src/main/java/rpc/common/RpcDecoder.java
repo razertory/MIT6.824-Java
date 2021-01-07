@@ -13,11 +13,11 @@ import java.util.List;
 public class RpcDecoder extends ByteToMessageDecoder {
 
     private Class<?> clazz;
-    private Serializer serializer;
+    private RpcSerializer rpcSerializer;
 
-    public RpcDecoder(Class<?> clazz, Serializer serializer) {
+    public RpcDecoder(Class<?> clazz, RpcSerializer rpcSerializer) {
         this.clazz = clazz;
-        this.serializer = serializer;
+        this.rpcSerializer = rpcSerializer;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
         byte[] bytes = new byte[dataLength];
         byteBuf.readBytes(bytes);  //
         //将 byte 数据转化为我们需要的对象。
-        Object o = serializer.deserialize(clazz, bytes);
+        Object o = rpcSerializer.deserialize(clazz, bytes);
         list.add(o);
     }
 }

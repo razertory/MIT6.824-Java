@@ -5,7 +5,6 @@
 
 package rpc.io;
 
-import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -16,6 +15,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 import rpc.common.RpcDecoder;
+import rpc.common.RpcEncoder.JSONRpcSerializer;
 import rpc.common.RpcRequest;
 import rpc.common.RpcResponse;
 
@@ -37,7 +37,7 @@ public class NettyServer {
                 protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
                     ChannelPipeline pipeline = nioSocketChannel.pipeline();
                     pipeline.addFirst(new StringEncoder());
-                    pipeline.addLast(new RpcDecoder(RpcRequest.class, new JSONSerializer()));
+                    pipeline.addLast(new RpcDecoder(RpcRequest.class, new JSONRpcSerializer()));
                     pipeline.addLast(new ChannelInboundHandlerAdapter() {
                         @Override
                         public void channelRead(ChannelHandlerContext ctx, Object o)

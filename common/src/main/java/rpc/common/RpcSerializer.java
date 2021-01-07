@@ -11,7 +11,7 @@ import java.io.IOException;
  * @author razertory
  * @date 2021/1/6
  */
-public interface Serializer {
+public interface RpcSerializer {
     /**
      * java 对象转换为二进制
      * @param object
