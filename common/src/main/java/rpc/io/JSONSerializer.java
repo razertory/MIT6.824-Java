@@ -7,12 +7,13 @@ package rpc.io;
 
 import com.alibaba.fastjson.JSON;
 import java.io.IOException;
+import rpc.common.Serializer;
 
 /**
  * @author razertory
  * @date 2021/1/6
  */
-public class JSONSerializer implements Serializer{
+public class JSONSerializer implements Serializer {
     public byte[] serialize(Object object) throws IOException {
         return JSON.toJSONBytes(object);
     }

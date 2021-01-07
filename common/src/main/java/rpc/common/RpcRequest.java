@@ -3,7 +3,7 @@
 
  */
 
-package rpc.io;
+package rpc.common;
 
 import lombok.Data;
 
