@@ -1,7 +1,6 @@
 /*
  * Serializer.java
- * Copyright 2021 Qunhe Tech, all rights reserved.
- * Qunhe PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
+
  */
 
 package rpc.io;
@@ -9,7 +8,7 @@ package rpc.io;
 import java.io.IOException;
 
 /**
- * @author gusu
+ * @author razertory
  * @date 2021/1/6
  */
 public interface Serializer {
