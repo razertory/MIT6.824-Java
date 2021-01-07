@@ -16,7 +16,7 @@ import rpc.common.RpcRequest;
  * @date 2021/1/6
  */
 @Data
-public class NettyClient extends ChannelInboundHandlerAdapter implements Callable {
+public class RpcClient extends ChannelInboundHandlerAdapter implements Callable {
 
     private ChannelHandlerContext context;
     private String result;
@@ -24,7 +24,7 @@ public class NettyClient extends ChannelInboundHandlerAdapter implements Callabl
     private String serverHost;
     private int serverPort;
 
-    public NettyClient(String serverHost, int serverPort) {
+    public RpcClient(String serverHost, int serverPort) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
     }

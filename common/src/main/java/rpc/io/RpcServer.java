@@ -14,16 +14,16 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
+import java.lang.reflect.Method;
 import rpc.common.RpcDecoder;
 import rpc.common.RpcEncoder.JSONRpcSerializer;
 import rpc.common.RpcRequest;
-import rpc.common.RpcResponse;
 
 /**
  * @author razertory
  * @date 2021/1/6
  */
-public class NettyServer {
+public class RpcServer {
 
     public void init(String host, int port) throws Exception {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -42,7 +42,7 @@ public class NettyServer {
                         @Override
                         public void channelRead(ChannelHandlerContext ctx, Object o)
                             throws Exception {
-                            ctx.writeAndFlush("foo");
+                            ctx.writeAndFlush(invoke(o));
                         }
                     });
                 }
@@ -51,15 +51,23 @@ public class NettyServer {
         System.out.println("started server on port: " + port);
     }
 
-    private RpcResponse invoke(Object o) {
-        RpcResponse rpcResponse = new RpcResponse();
-        if (o instanceof RpcRequest) {
-            rpcResponse.setRequestId(((RpcRequest) o).getRequestId());
+    private Object invoke(Object o) throws Exception{
+        if (!(o instanceof RpcRequest)) {
+            throw new Exception("fuck");
         }
-        return rpcResponse;
+        RpcRequest rpcRequest = (RpcRequest) o;
+        Object serverObj = this;
+        Class<?> serverClass = serverObj.getClass();
+        String methodName = rpcRequest.getMethodName();
+        Class<?>[] parameterTypes = rpcRequest.getParameterTypes();
+        Method method = serverClass.getDeclaredMethod(methodName, parameterTypes);
+        method.setAccessible(true);
+        Object[] parameters = rpcRequest.getParameters();
+        Object ret = method.invoke(serverObj, parameters);
+        return ret;
     }
 
     public static void main(String[] args) throws Exception {
-        new NettyServer().init("", new Integer(args[0]));
+        new RpcServer().init("", new Integer(args[0]));
     }
 }

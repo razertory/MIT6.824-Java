@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 import rpc.common.RpcEncoder;
 import rpc.common.RpcRequest;
 import rpc.common.RpcEncoder.JSONRpcSerializer;
-import rpc.io.NettyClient;
+import rpc.io.RpcClient;
 
 /**
  * @author razertory
@@ -33,10 +33,10 @@ public class RpcProxy {
     private ExecutorService executorService = Executors
         .newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    private NettyClient nettyClient;
+    private RpcClient rpcClient;
 
     public Object createProxy(final Class<?> serviceClass, String serverHost, int serverPort) {
-        nettyClient = new NettyClient(serverHost, serverPort);
+        rpcClient = new RpcClient(serverHost, serverPort);
         return Proxy.newProxyInstance(
             Thread.currentThread().getContextClassLoader(),
 
@@ -50,9 +50,9 @@ public class RpcProxy {
                     request.setMethodName(method.getName());
                     request.setParameterTypes(method.getParameterTypes());
                     request.setParameters(args);
-                    nettyClient.setRequest(request);
+                    rpcClient.setRequest(request);
                     bind();
-                    Object result = executorService.submit(nettyClient).get();
+                    Object result = executorService.submit(rpcClient).get();
                     return result;
                 }
             });
@@ -70,9 +70,9 @@ public class RpcProxy {
                     ChannelPipeline pipeline = socketChannel.pipeline();
                     pipeline.addFirst(new RpcEncoder(RpcRequest.class, new JSONRpcSerializer()));
                     pipeline.addLast(new StringDecoder());
-                    pipeline.addLast(nettyClient);
+                    pipeline.addLast(rpcClient);
                 }
             });
-        bootstrap.connect(nettyClient.getServerHost(), nettyClient.getServerPort()).sync();
+        bootstrap.connect(rpcClient.getServerHost(), rpcClient.getServerPort()).sync();
     }
 }
