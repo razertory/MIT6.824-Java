@@ -1,52 +1,65 @@
 /*
- * UserClientHandler.java
-
+ * RpcClient.java
+ * Copyright 2021 Qunhe Tech, all rights reserved.
+ * Qunhe PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
  */
 
 package rpc.io;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import java.util.concurrent.Callable;
-import lombok.Data;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import rpc.common.RpcEncoder;
+import rpc.common.RpcEncoder.JSONRpcSerializer;
 import rpc.common.RpcRequest;
+import util.LogUtil;
 
-/**
- * @author razertory
- * @date 2021/1/6
- */
-@Data
-public class RpcClient extends ChannelInboundHandlerAdapter implements Callable {
+public class RpcClient {
 
-    private ChannelHandlerContext context;
-    private String result;
-    private RpcRequest request;
-    private String serverHost;
-    private int serverPort;
+    private ExecutorService executorService = Executors
+        .newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public RpcClient(String serverHost, int serverPort) {
-        this.serverHost = serverHost;
-        this.serverPort = serverPort;
+    public Object call(int port, String methodName, Object[] args) throws Exception {
+        RpcRequest request = new RpcRequest();
+        request.setRequestId(UUID.randomUUID().toString());
+        request.setMethodName(methodName);
+        request.setParameters(args);
+        Class<?>[] parameterTypes = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            parameterTypes[i] = args[i].getClass();
+        }
+        request.setParameterTypes(parameterTypes);
+        RpcChannel rpcChannel = new RpcChannel(port);
+        rpcChannel.setRequest(request);
+        bind(rpcChannel);
+        Object ret = executorService.submit(rpcChannel).get();
+        LogUtil.log("id: " + request.getRequestId() + " resp: " + ret + " req: " + request);
+        return ret;
     }
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        this.context = ctx;
-    }
-
-    @Override
-    public synchronized void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        result = msg.toString();
-        notify();
-    }
-
-    public synchronized Object call() throws Exception {
-        context.writeAndFlush(request);
-        wait();
-        return result;
-    }
-
-    public void setRequest(RpcRequest request) {
-        this.request = request;
+    private void bind(RpcChannel rpcChannel) throws Exception {
+        NioEventLoopGroup group = new NioEventLoopGroup();
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(group)
+            .channel(NioSocketChannel.class)
+            .option(ChannelOption.TCP_NODELAY, true)
+            .handler(new ChannelInitializer<SocketChannel>() {
+                @Override
+                protected void initChannel(SocketChannel socketChannel) {
+                    ChannelPipeline pipeline = socketChannel.pipeline();
+                    pipeline.addFirst(new RpcEncoder(RpcRequest.class, new JSONRpcSerializer()));
+                    pipeline.addLast(new StringDecoder());
+                    pipeline.addLast(rpcChannel);
+                }
+            });
+        bootstrap.connect("127.0.0.1", rpcChannel.getServerPort()).sync();
     }
 }
