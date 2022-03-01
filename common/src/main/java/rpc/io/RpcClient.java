@@ -27,7 +27,7 @@ public class RpcClient {
     private ExecutorService executorService = Executors
         .newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public Object call(int port, String methodName, Object[] args) throws Exception {
+    public Object call(int port, String methodName, Object[] args) {
         RpcRequest request = new RpcRequest();
         request.setRequestId(UUID.randomUUID().toString());
         request.setMethodName(methodName);
@@ -39,10 +39,15 @@ public class RpcClient {
         request.setParameterTypes(parameterTypes);
         RpcChannel rpcChannel = new RpcChannel(port);
         rpcChannel.setRequest(request);
-        bind(rpcChannel);
-        Object ret = executorService.submit(rpcChannel).get();
-        LogUtil.log("id: " + request.getRequestId() + " resp: " + ret + " req: " + request);
-        return ret;
+        try {
+            bind(rpcChannel);
+            Object ret = executorService.submit(rpcChannel).get();
+            LogUtil.log("id: " + request.getRequestId() + " resp: " + ret + " req: " + request);
+            return ret;
+        } catch (Exception e) {
+            LogUtil.log("fail to call ");
+        }
+        return null;
     }
 
     private void bind(RpcChannel rpcChannel) throws Exception {
