@@ -1,7 +1,14 @@
 package func;
 
+import common.KeyValue;
 import java.util.List;
 
 public interface MapFunc {
-    List<String> mapF(String key, String value);
+
+    /**
+     * @param file
+     * @param cnt
+     * @return
+     */
+    List<KeyValue> mapF(String file, String cnt);
 }

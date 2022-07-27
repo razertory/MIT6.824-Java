@@ -1,5 +1,3 @@
-import com.alibaba.fastjson.JSON;
-import common.MRDto;
 import func.MapFunc;
 import func.ReduceFunc;
 
@@ -8,16 +6,18 @@ import func.ReduceFunc;
  * @date 2021/1/1
  */
 public class Worker {
+
     private Integer masterHost;
+    private Integer id;
 
-    public Worker(Integer masterHost) {
+    public Worker(Integer masterHost, Integer id) {
         this.masterHost = masterHost;
+        this.id = id;
     }
 
-    public void work(MapFunc mapFunc, ReduceFunc reduceFunc) {
-        Object o = new RpcClient().call(masterHost, "assignTask", null);
-        MRDto mrDto = JSON.parseObject(o.toString(), MRDto.class);
+    public void doTask(MapFunc mapFunc, ReduceFunc reduceFunc) {
     }
+
 
     public static void main(String[] args) {
     }

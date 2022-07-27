@@ -5,8 +5,7 @@
  */
 
 /**
- * it decides how to assign those tasks to workers, and how to handle worker failures.
- * @author gusu
+ * decides how to assign those tasks to workers, and how to handle worker failures.
  * @date 2022/7/23
  */
 public class Schedule {

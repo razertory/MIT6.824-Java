@@ -77,6 +77,13 @@ public class Master extends RpcNode {
 
     public void sequential() {}
 
+    /**
+     * 注册
+     */
+    public void register() {
+
+    }
+
     public static void main(String[] args) {
     }
 }
