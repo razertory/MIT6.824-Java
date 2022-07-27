@@ -6,7 +6,7 @@
 import common.Cons;
 import common.MRDto;
 import common.TaskFile;
-import rpc.io.RpcServer;
+import rpc.io.RpcNode;
 import util.LogUtil;
 
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import java.util.Map;
  * @author razertory
  * @date 2021/1/1
  */
-public class Master extends RpcServer {
+public class Master extends RpcNode {
     private Integer reduceNum;
     private Boolean mapsDone;
     private Boolean done;
@@ -34,7 +34,7 @@ public class Master extends RpcServer {
         this.done = false;
         this.reduceNum = reduceNum;
         try {
-            serve(port);
+            serve();
         } catch (Exception e) {
             LogUtil.log("fail to start master server on port: " + port);
         }
@@ -72,6 +72,10 @@ public class Master extends RpcServer {
     private boolean reduceDone() {
         return false;
     }
+
+    public void distributed() {}
+
+    public void sequential() {}
 
     public static void main(String[] args) {
     }

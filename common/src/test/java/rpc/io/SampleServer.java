@@ -6,13 +6,17 @@
 
 package rpc.io;
 
+import java.util.UUID;
+
 /**
  * @author gusu
  * @date 2021/6/26
  */
-public class SampleServer extends RpcServer{
+public class SampleServer extends RpcNode {
+
+    private String id = UUID.randomUUID().toString();
 
     public String foo(String s) {
-        return "foo" + s;
+        return id + s;
     }
 }

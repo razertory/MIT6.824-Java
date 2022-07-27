@@ -2,7 +2,6 @@ import com.alibaba.fastjson.JSON;
 import common.MRDto;
 import func.MapFunc;
 import func.ReduceFunc;
-import rpc.io.RpcClient;
 
 /**
  * @author razertory
