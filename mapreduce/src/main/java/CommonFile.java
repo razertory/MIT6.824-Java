@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 public class CommonFile {
 
-    public static final String MR_MERGE_OUT = "src/main/resources/result/mr-merge-out.txt";
+    public static final String MR_MERGE_OUT = "src/main/resources/out/mr-merge-out.txt";
 
     public static String mrTempFile(Integer mapId, Integer reduceId) {
         String base = "src/main/resources/temp/mr-iterm-%s-%s";

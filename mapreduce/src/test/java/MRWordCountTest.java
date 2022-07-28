@@ -9,18 +9,15 @@ import org.junit.Test;
 public class MRWordCountTest {
 
     private final String ARTICLES_DIR = "src/main/resources/articles";
-
     private final String TEMP_FILE_DIR = "src/main/resources/temp";
-
-    private final String EXPECT_WORD_COUNT_SEQ_REDUCE = "src/main/resources/result/expect/word-count-reduce.txt";
-
-    private final String ACT_WORD_COUNT_SEQ_REDUCE = "src/main/resources/result/seq-reduce.txt";
+    private final String OUT_FILE_DIR = "src/main/resources/out";
 
     @Before
     public void setUp() {
         FileUtil.delete(CommonFile.MR_MERGE_OUT);
         FileUtil.delete(CommonFile.mrTempFile(0, 0));
         FileUtil.dirFiles(TEMP_FILE_DIR).forEach(f -> FileUtil.delete(f));
+        FileUtil.dirFiles(OUT_FILE_DIR).forEach(f -> FileUtil.delete(f));
     }
 
     @After
@@ -28,6 +25,7 @@ public class MRWordCountTest {
         FileUtil.delete(CommonFile.MR_MERGE_OUT);
         FileUtil.delete(CommonFile.mrTempFile(0, 0));
         FileUtil.dirFiles(TEMP_FILE_DIR).forEach(f -> FileUtil.delete(f));
+        FileUtil.dirFiles(OUT_FILE_DIR).forEach(f -> FileUtil.delete(f));
     }
 
     @Test

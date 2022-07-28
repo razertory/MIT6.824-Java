@@ -23,6 +23,8 @@ import util.LogUtil;
  */
 public class FileUtil {
 
+    private static final String KEEP_FILE = ".keep";
+
     public static String readFile(String file) {
         try {
             return new String(Files.readAllBytes(Paths.get(file)));
@@ -76,7 +78,14 @@ public class FileUtil {
         }
     }
 
+    /**
+     * 忽略 keep 文件删除
+     * @param path
+     */
     public static void delete(String path) {
+        if (path.contains(KEEP_FILE)) {
+            return;
+        }
         try {
             Files.delete(Paths.get(path));
         } catch (Exception e) {
