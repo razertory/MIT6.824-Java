@@ -1,16 +1,8 @@
-/*
- * CommonMap.java
- * Copyright 2022 Qunhe Tech, all rights reserved.
- * Qunhe PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
- */
-
 import com.alibaba.fastjson.JSON;
 import common.KeyValue;
 import common.Util;
 import func.MapFunc;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -24,7 +16,7 @@ public class CommonMap {
         List<KeyValue> values = mapFunc.mapF(filePath, cnt);
         values.forEach(p -> {
             String key = p.getKey(), tmPath = tempFilePath(workerId, key, nReduce);
-            Util.append(tmPath, p);
+            Util.append(tmPath, JSON.toJSONString(p).getBytes(StandardCharsets.UTF_8));
         });
     }
 
@@ -40,6 +32,7 @@ public class CommonMap {
 
     /**
      * 中间文件路径
+     *
      * @param workerId
      * @param key
      * @param nReduce
@@ -47,7 +40,6 @@ public class CommonMap {
      */
     private String tempFilePath(Integer workerId, String key, Integer nReduce) {
         Integer hashNum = hash(key, nReduce);
-        String base = "src/main/resources/temp/mr-iterm-%s-%s";
-        return String.format(base, workerId, hashNum);
+        return CommonFile.tempFileBase(workerId, hashNum);
     }
 }
