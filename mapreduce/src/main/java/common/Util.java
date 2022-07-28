@@ -39,4 +39,11 @@ public class Util {
         }
     }
 
+    public static void delete(String path) {
+        try {
+            Files.delete(Paths.get(path));
+        } catch (Exception e) {
+        }
+    }
+
 }
