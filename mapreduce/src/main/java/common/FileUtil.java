@@ -6,11 +6,14 @@
 
 package common;
 
-import com.alibaba.fastjson.JSON;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import util.LogUtil;
 
@@ -18,13 +21,25 @@ import util.LogUtil;
  * @author gusu
  * @date 2022/7/27
  */
-public class Util {
+public class FileUtil {
 
     public static String readFile(String file) {
         try {
             return new String(Files.readAllBytes(Paths.get(file)));
         } catch (Exception e) {
             LogUtil.log("fail to read file, " + file);
+            return null;
+        }
+    }
+
+    public static List<String> dirFiles(String dir) {
+        try {
+            return Files.list(Paths.get(dir))
+                .map(Path::toFile)
+                .filter(File::isFile)
+                .map(File::getAbsolutePath)
+                .collect(Collectors.toList());
+        } catch (Exception e) {
             return null;
         }
     }
@@ -37,11 +52,12 @@ public class Util {
         }
     }
 
-    public static void append(String path, byte[] bytes) {
+    public static void append(String path, String cnt) {
+        String toAppend = cnt + "\n";
         try {
             Files.write(
                 Paths.get(path),
-                bytes,
+                toAppend.getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.CREATE,
                 StandardOpenOption.APPEND);
         } catch (Exception e) {

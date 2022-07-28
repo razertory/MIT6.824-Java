@@ -1,8 +1,7 @@
 import com.alibaba.fastjson.JSON;
 import common.KeyValue;
-import common.Util;
+import common.FileUtil;
 import func.MapFunc;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -12,11 +11,11 @@ import java.util.List;
 public class CommonMap {
 
     public void doMap(MapFunc mapFunc, Integer workerId, String filePath, Integer nReduce) {
-        String cnt = Util.readFile(filePath);
+        String cnt = FileUtil.readFile(filePath);
         List<KeyValue> values = mapFunc.mapF(filePath, cnt);
         values.forEach(p -> {
             String key = p.getKey(), tmPath = tempFilePath(workerId, key, nReduce);
-            Util.append(tmPath, JSON.toJSONString(p).getBytes(StandardCharsets.UTF_8));
+            FileUtil.append(tmPath, JSON.toJSONString(p));
         });
     }
 
@@ -40,6 +39,6 @@ public class CommonMap {
      */
     private String tempFilePath(Integer workerId, String key, Integer nReduce) {
         Integer hashNum = hash(key, nReduce);
-        return CommonFile.tempFileBase(workerId, hashNum);
+        return CommonFile.mrTempFile(workerId, hashNum);
     }
 }

@@ -1,12 +1,13 @@
 import com.alibaba.fastjson.JSON;
 import common.KeyValue;
-import common.Util;
+import common.FileUtil;
 import func.ReduceFunc;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -17,10 +18,9 @@ public class CommonReduce {
 
     public void doReduce(ReduceFunc reduceFunc, Integer id, Integer nMap, String reduceFilePath) {
         Map<String, List<String>> kvsMap = new HashMap<>();
-        List<String> ks = new ArrayList<>();
         for (int i = 0; i < nMap; i++) {
-            String tempFile = CommonFile.tempFileBase(i, id);
-            Stream<String> stream = Util.stream(tempFile);
+            String tempFile = CommonFile.mrTempFile(i, id);
+            Stream<String> stream = FileUtil.stream(tempFile);
             stream.forEach(
                 s -> {
                     KeyValue keyValue = JSON.parseObject(
@@ -30,14 +30,14 @@ public class CommonReduce {
                         new ArrayList<>());
                     keyValues.add(keyValue.getValue());
                     kvsMap.put(keyValue.getKey(), keyValues);
-                    ks.add(keyValue.getKey());
                 });
         }
-        ks.sort(String::compareTo);
-        ks.forEach(k -> {
+        List<String> keys = new ArrayList<>(kvsMap.keySet()).stream().sorted(String::compareTo)
+            .collect(Collectors.toList());
+        keys.forEach(k -> {
                 List<String> v = kvsMap.get(k);
                 String cnt = reduceFunc.reduceF(k, v);
-                Util.write(reduceFilePath, JSON.toJSONString(new KeyValue(k, cnt)));
+                FileUtil.append(reduceFilePath, JSON.toJSONString(new KeyValue(k, cnt)));
             }
         );
     }
