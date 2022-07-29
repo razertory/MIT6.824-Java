@@ -1,5 +1,6 @@
 package common;
 
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TaskFile {
     private Integer status;
-    private String url;
+    private String uri;
 }

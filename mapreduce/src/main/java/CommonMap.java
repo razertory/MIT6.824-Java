@@ -3,6 +3,7 @@ import common.KeyValue;
 import common.FileUtil;
 import func.MapFunc;
 import java.util.List;
+import util.LogUtil;
 
 /**
  * @author gusu
@@ -17,6 +18,7 @@ public class CommonMap {
             String key = p.getKey(), tmPath = tempFilePath(workerId, key, nReduce);
             FileUtil.append(tmPath, JSON.toJSONString(p));
         });
+        LogUtil.log("ok to do map");
     }
 
     /**

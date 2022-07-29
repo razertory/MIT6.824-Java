@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import util.LogUtil;
 
 /**
  * @author gusu
@@ -40,5 +41,6 @@ public class CommonReduce {
                 FileUtil.append(reduceFilePath, JSON.toJSONString(new KeyValue(k, cnt)));
             }
         );
+        LogUtil.log("ok to do reduce");
     }
 }

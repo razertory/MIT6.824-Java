@@ -6,7 +6,9 @@
 
 package rpc.io;
 
-import java.util.UUID;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author gusu
@@ -14,9 +16,7 @@ import java.util.UUID;
  */
 public class SampleServer extends RpcNode {
 
-    private String id = UUID.randomUUID().toString();
-
-    public String foo(String s) {
-        return id + s;
+    public Map<String, String> foo(String s) {
+        return null;
     }
 }

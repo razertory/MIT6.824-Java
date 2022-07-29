@@ -10,6 +10,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import java.io.IOException;
+import util.LogUtil;
 
 /**
  * @author razertory
@@ -45,12 +46,13 @@ public class RpcEncoder extends MessageToByteEncoder {
      * @date 2021/1/6
      */
     public static class JSONRpcSerializer implements RpcSerializer {
+
         public byte[] serialize(Object object) throws IOException {
             return JSON.toJSONBytes(object);
         }
 
         public <T> T deserialize(Class<T> clazz, byte[] bytes) throws IOException {
-            return JSON.parseObject(bytes,clazz);
+            return JSON.parseObject(bytes, clazz);
         }
     }
 }
