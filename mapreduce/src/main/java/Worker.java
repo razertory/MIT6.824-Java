@@ -32,15 +32,15 @@ public class Worker extends RpcNode {
     }
 
     private MRArg requireTask(Integer port) {
-         MRArg arg = JSON.parseObject(
-            call(Cons.MASTER_HOST, "requireTask", Arrays.asList(port)).toString(),
+        MRArg arg = JSON.parseObject(
+            call(Cons.MASTER_HOST, "requireTask", new Object[]{port}).toString(),
             MRArg.class);
-         return arg;
+        return arg;
     }
 
     private MRArg doneTask(Integer id, Integer type) {
         return JSON.parseObject(
-            call(Cons.MASTER_HOST, "doneTask", Arrays.asList(id, type)).toString(), MRArg.class);
+            call(Cons.MASTER_HOST, "doneTask", new Object[]{id, type}).toString(), MRArg.class);
     }
 
     public String rpcPing() {

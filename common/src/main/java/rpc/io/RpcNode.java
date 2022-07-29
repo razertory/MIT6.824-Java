@@ -5,6 +5,7 @@
 
 package rpc.io;
 
+import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,6 +38,10 @@ public class RpcNode {
 
     public Integer getPort() {
         return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
     }
 
     public RpcNode() {
@@ -87,7 +92,7 @@ public class RpcNode {
         method.setAccessible(true);
         Object[] parameters = rpcRequest.getParameters();
         Object ret = method.invoke(serverObj, parameters);
-        return ret;
+        return JSON.toJSONString(ret);
     }
 
     public Object call(int port, String methodName, Object[] args) {

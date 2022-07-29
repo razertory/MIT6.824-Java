@@ -22,6 +22,9 @@ public class CommonReduce {
         for (int i = 0; i < nMap; i++) {
             String tempFile = CommonFile.mrTempFile(i, id);
             Stream<String> stream = FileUtil.stream(tempFile);
+            if (stream == null) {
+                return;
+            }
             stream.forEach(
                 s -> {
                     KeyValue keyValue = JSON.parseObject(

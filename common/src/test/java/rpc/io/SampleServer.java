@@ -7,7 +7,7 @@
 package rpc.io;
 
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class SampleServer extends RpcNode {
 
-    public Map<String, String> foo(String s) {
-        return null;
+    public Map foo(String s) {
+        return new HashMap(1);
     }
 }

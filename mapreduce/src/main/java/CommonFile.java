@@ -26,6 +26,9 @@ public class CommonFile {
         Map<String, String> kvs = new HashMap<>();
         reduceFiles.forEach(reduceFile -> {
             Stream<String> stream = FileUtil.stream(reduceFile);
+            if (stream == null) {
+                return;
+            }
             stream.forEach(s -> {
                     KeyValue keyValue = JSON.parseObject(s.getBytes(StandardCharsets.UTF_8),
                         KeyValue.class);

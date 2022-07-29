@@ -28,6 +28,10 @@ public class Master extends RpcNode {
     private Map<String, Integer> inputFileStatusMap = new HashMap<>();
     private Set<Integer> workerPorts = new HashSet<>();
 
+    public Map<Integer, WorkerAttr> getReducers() {
+        return reducers;
+    }
+
     public Master(List<String> files, Integer mapNum, Integer reduceNum) {
         files.forEach(file -> {
             inputFileStatusMap.put(file, Cons.TASK_STATUS_TODO);
@@ -38,7 +42,7 @@ public class Master extends RpcNode {
             mappers.put(i, WorkerAttr.idleMapper(i));
         }
         for (int i = 0; i < reduceNum; i++) {
-            mappers.put(i, WorkerAttr.idleReducer(i));
+            reducers.put(i, WorkerAttr.idleReducer(i));
         }
     }
 
@@ -49,8 +53,9 @@ public class Master extends RpcNode {
     }
 
     private WorkerAttr idleReducer() {
+        LogUtil.log("reducers" + reducers);
         return reducers.values().stream()
-            .filter(mapper -> mapper.getStatus().equals(Cons.TASK_STATUS_TODO)).findFirst()
+            .filter(reducer -> reducer.getStatus().equals(Cons.TASK_STATUS_TODO)).findFirst()
             .orElse(null);
     }
 
@@ -85,7 +90,6 @@ public class Master extends RpcNode {
             reducers.get(id).setStatus(Cons.TASK_STATUS_DOING);
             return MRArg.reduceWork(id, mapNum, CommonFile.reduceOutFile(id));
         }
-        LogUtil.log("222");
         return MRArg.empty();
     }
 
@@ -102,12 +106,19 @@ public class Master extends RpcNode {
             WorkerAttr workerAttr = mappers.get(workerId);
             workerAttr.setStatus(Cons.TASK_STATUS_DONE);
             inputFileStatusMap.put(workerAttr.getMapFile(), Cons.TASK_STATUS_DONE);
+            String idleFile = idleFile();
+            if (idleFile != null) {
+                workerAttr.setMapFile(idleFile);
+                inputFileStatusMap.put(idleFile, Cons.TASK_STATUS_DOING);
+                return MRArg.mapWork(workerAttr.getId(), reduceNum, idleFile);
+            }
         }
         if (taskType.equals(Cons.TASK_TYPE_REDUCE)) {
             WorkerAttr workerAttr = reducers.get(workerId);
             workerAttr.setStatus(Cons.TASK_STATUS_DONE);
         }
         WorkerAttr idleReducer = idleReducer();
+        LogUtil.log("idleReducer, " + idleReducer);
         if (idleReducer != null) {
             Integer id = idleReducer.getId();
             reducers.get(id).setStatus(Cons.TASK_STATUS_DOING);
