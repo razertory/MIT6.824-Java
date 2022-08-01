@@ -1,7 +1,7 @@
 package common;/*
  * common.Task.java
- * Copyright 2021 Qunhe Tech, all rights reserved.
- * Qunhe PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
+ * Copyright 2021 Razertory, all rights reserved.
+ * GUSU PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
  */
 
 import lombok.Data;

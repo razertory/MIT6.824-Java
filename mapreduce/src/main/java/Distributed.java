@@ -1,7 +1,7 @@
 /*
  * Distributed.java
- * Copyright 2022 Qunhe Tech, all rights reserved.
- * Qunhe PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
+ * Copyright 2022 Razertory, all rights reserved.
+ * GUSU PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
  */
 
 import common.Cons;
