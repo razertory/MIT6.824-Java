@@ -19,7 +19,7 @@ public class Single {
     private CommonReduce commonReduce = new CommonReduce();
 
     public void run(MapFunc mapFunc, ReduceFunc reduceFunc, List<String> paths) {
-        paths.parallelStream().forEach(path -> {
+        paths.forEach(path -> {
                 commonMap.doMap(mapFunc, 0, path, 1);
             }
         );

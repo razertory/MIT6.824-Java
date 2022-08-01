@@ -21,7 +21,8 @@ public class RpcDecoder extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf,
+        List<Object> list) throws Exception {
 
         // 读取传送过来的消息的长度
         int dataLength = byteBuf.readInt();

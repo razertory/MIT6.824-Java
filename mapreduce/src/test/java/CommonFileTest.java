@@ -1,6 +1,4 @@
-
 import common.FileUtil;
-import java.util.Arrays;
 import java.util.Collections;
 import org.junit.After;
 import org.junit.Assert;

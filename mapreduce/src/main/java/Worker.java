@@ -3,7 +3,8 @@ import common.Cons;
 import common.MRArg;
 import func.MapFunc;
 import func.ReduceFunc;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
 import rpc.io.RpcNode;
 import util.LogUtil;
 
@@ -16,9 +17,9 @@ public class Worker extends RpcNode {
     private CommonMap commonMap = new CommonMap();
     private CommonReduce commonReduce = new CommonReduce();
 
-    public void start(MapFunc mapFunc, ReduceFunc reduceFunc) {
+    public void work(MapFunc mapFunc, ReduceFunc reduceFunc) {
         MRArg mrArg = requireTask(getPort());
-        while (mrArg.getWorkerId() != null) {
+        while (mrArg.getWorkerId() != null && !mrArg.getDone()) {
             if (mrArg.getWorkerType().equals(Cons.TASK_TYPE_MAP)) {
                 commonMap.doMap(mapFunc, mrArg.getWorkerId(), mrArg.getJobFile(),
                     mrArg.getReduceNum());
@@ -28,6 +29,11 @@ public class Worker extends RpcNode {
                     mrArg.getReduceOutFile());
             }
             mrArg = doneTask(mrArg.getWorkerId(), mrArg.getWorkerType());
+            try {
+                Thread.sleep(50L);
+            } catch (Exception e) {
+                LogUtil.log("not done yet, " + mrArg);
+            }
         }
     }
 
@@ -43,7 +49,14 @@ public class Worker extends RpcNode {
             call(Cons.MASTER_HOST, "doneTask", new Object[]{id, type}).toString(), MRArg.class);
     }
 
-    public String rpcPing() {
-        return "pong";
+    public String rpcPing(String param) {
+        return "pong" + param;
+    }
+
+    public Set shutDown(String name) {
+        shutDownServer();
+        Thread.currentThread().interrupt();
+        LogUtil.log("interrupted : " + name);
+        return Collections.emptySet();
     }
 }

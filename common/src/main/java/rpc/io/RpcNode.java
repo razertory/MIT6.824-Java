@@ -35,6 +35,12 @@ public class RpcNode {
         .newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     private Integer port;
+    private NioEventLoopGroup bossGroup;
+    private NioEventLoopGroup workGroup;
+
+    public RpcNode() {
+        this.port = randPort();
+    }
 
     public Integer getPort() {
         return port;
@@ -44,21 +50,17 @@ public class RpcNode {
         this.port = port;
     }
 
-    public RpcNode() {
-        this.port = randPort();
-    }
-
     /**
      * 启动这个 RPC 的网络服务
      *
      * @throws Exception
      */
     public void serve() throws Exception {
-        NioEventLoopGroup bossGroup = new NioEventLoopGroup();
-        NioEventLoopGroup workGroup = new NioEventLoopGroup();
+        this.bossGroup = new NioEventLoopGroup();
+        this.workGroup = new NioEventLoopGroup();
         ServerBootstrap serverBootstrap = new ServerBootstrap();
 
-        serverBootstrap.group(bossGroup, workGroup);
+        serverBootstrap.group(this.bossGroup, this.workGroup);
         serverBootstrap.channel(NioServerSocketChannel.class);
         serverBootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
             @Override
@@ -113,9 +115,9 @@ public class RpcNode {
             LogUtil.log("id: " + request.getRequestId() + " resp: " + ret + " req: " + request);
             return ret;
         } catch (Exception e) {
-            LogUtil.log("fail to call ");
+            LogUtil.log("fail to call err, " + e);
+            return "";
         }
-        return null;
     }
 
     private void bind(RpcChannel rpcChannel) throws Exception {
@@ -124,6 +126,7 @@ public class RpcNode {
         bootstrap.group(group)
             .channel(NioSocketChannel.class)
             .option(ChannelOption.TCP_NODELAY, true)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000)
             .handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
@@ -139,6 +142,11 @@ public class RpcNode {
     private int randPort() {
         int start = 11000, end = 13000;
         return (int) ((Math.random() * (end - start)) + start);
+    }
+
+    protected void shutDownServer() {
+        this.bossGroup.shutdownGracefully();
+        this.workGroup.shutdownGracefully();
     }
 
 }

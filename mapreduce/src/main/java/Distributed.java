@@ -4,15 +4,12 @@
  * Qunhe PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
  */
 
-import biz.WordCount;
-import com.google.common.collect.Range;
 import common.Cons;
-import common.WorkerAttr;
 import func.MapFunc;
 import func.ReduceFunc;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
 
 /**
  * @author gusu
@@ -20,25 +17,30 @@ import java.util.stream.Collectors;
  */
 public class Distributed {
 
-    public void run(MapFunc mapFunc, ReduceFunc reduceFunc, List<String> paths, Integer mapNum,
+    public List<Thread> workerThreads = new ArrayList<>();
+
+    public void run(MapFunc mapFunc, ReduceFunc reduceFunc, List<String> paths,
         Integer reduceNum) throws Exception {
-        Master master = new Master(paths, mapNum, reduceNum);
+        Master master = new Master(paths, reduceNum);
         master.setPort(Cons.MASTER_HOST);
+        final CountDownLatch countDownLatch = master.getCountDownLatch();
         master.serve();
 
-        final CountDownLatch countDownLatch = new CountDownLatch(mapNum);
-
-        for (int i = 0; i < mapNum; i++) {
+        for (int i = 0; i < paths.size(); i++) {
+            final Worker worker = newWorker();
             Runnable runnable = () -> {
-                newWorker().start(mapFunc, reduceFunc);
-                countDownLatch.countDown();
+                worker.work(mapFunc, reduceFunc);
             };
-            new Thread(runnable).start();
+            Thread t = new Thread(runnable);
+            workerThreads.add(t);
+            t.start();
         }
         countDownLatch.await();
-        List<String> files = master.getReducers().keySet().stream()
-            .map(id -> CommonFile.reduceOutFile(id)).collect(
-                Collectors.toList());
+
+        List<String> files = new ArrayList<>();
+        for (int i = 0; i < reduceNum; i++) {
+            files.add(CommonFile.reduceOutFile(i));
+        }
         CommonFile.mergeReduceOutFiles(files);
     }
 
@@ -46,6 +48,10 @@ public class Distributed {
         Integer port = (int) ((Math.random() * (15000 - 14000)) + 14000);
         Worker worker = new Worker();
         worker.setPort(port);
+        try {
+            worker.serve();
+        } catch (Exception e) {
+        }
         return worker;
     }
 }

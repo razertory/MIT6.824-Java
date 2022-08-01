@@ -1,6 +1,6 @@
 import com.alibaba.fastjson.JSON;
-import common.KeyValue;
 import common.FileUtil;
+import common.KeyValue;
 import func.ReduceFunc;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -44,6 +44,6 @@ public class CommonReduce {
                 FileUtil.append(reduceFilePath, JSON.toJSONString(new KeyValue(k, cnt)));
             }
         );
-        LogUtil.log("ok to do reduce");
+        LogUtil.log("ok to do reduce for id: " + id);
     }
 }

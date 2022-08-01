@@ -1,6 +1,6 @@
 import com.alibaba.fastjson.JSON;
-import common.KeyValue;
 import common.FileUtil;
+import common.KeyValue;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +14,8 @@ public class CommonFile {
 
     public static String mrTempFile(Integer mapId, Integer reduceId) {
         String base = "src/main/resources/temp/mr-iterm-%s-%s";
-        return String.format(base, mapId, reduceId);
+        String ret = String.format(base, mapId, reduceId);
+        return ret;
     }
 
     public static String reduceOutFile(Integer reduceId) {

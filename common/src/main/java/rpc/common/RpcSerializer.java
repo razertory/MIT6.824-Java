@@ -12,8 +12,10 @@ import java.io.IOException;
  * @date 2021/1/6
  */
 public interface RpcSerializer {
+
     /**
      * java 对象转换为二进制
+     *
      * @param object
      * @return
      * @throws IOException
@@ -23,6 +25,7 @@ public interface RpcSerializer {
 
     /**
      * 二进制转换成 java 对象
+     *
      * @param clazz
      * @param bytes
      * @param <T>

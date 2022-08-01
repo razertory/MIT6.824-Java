@@ -80,6 +80,7 @@ public class FileUtil {
 
     /**
      * 忽略 keep 文件删除
+     *
      * @param path
      */
     public static void delete(String path) {
@@ -89,6 +90,7 @@ public class FileUtil {
         try {
             Files.delete(Paths.get(path));
         } catch (Exception e) {
+            LogUtil.log("ok to delete: " + path);
         }
     }
 

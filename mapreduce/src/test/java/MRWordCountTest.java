@@ -1,9 +1,6 @@
 import biz.WordCount;
-import common.Cons;
 import common.FileUtil;
-import java.util.Arrays;
 import java.util.List;
-import javax.swing.JFileChooser;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,15 +33,38 @@ public class MRWordCountTest {
             wordCount.reduceFunc,
             paths
         );
-        String expect = FileUtil.readFile(CommonFileTest.MR_EXPECT_OUT);
-        String act = FileUtil.readFile(CommonFile.MR_MERGE_OUT);
-        Assert.assertEquals(expect, act);
+        compareOutFile();
     }
 
     @Test
     public void testWordCountDistributed() throws Exception {
         WordCount wordCount = new WordCount();
-        new Distributed().run(wordCount.mapFunc, wordCount.reduceFunc, paths, 2, 1);
+        new Distributed().run(wordCount.mapFunc, wordCount.reduceFunc, paths, 4);
+        compareOutFile();
+    }
+
+    /**
+     * 随机失败 N 个 worker
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testWordCountDistributedWithFail() throws Exception {
+        WordCount wordCount = new WordCount();
+        Distributed distributed = new Distributed();
+        Runnable r = () -> {
+            try {
+                Thread.sleep(100L);
+                distributed.workerThreads.get(2).interrupt();
+            } catch (Exception e) {
+            }
+        };
+        new Thread(r).start();
+        distributed.run(wordCount.mapFunc, wordCount.reduceFunc, paths, 4);
+        compareOutFile();
+    }
+
+    private void compareOutFile() {
         String expect = FileUtil.readFile(CommonFileTest.MR_EXPECT_OUT);
         String act = FileUtil.readFile(CommonFile.MR_MERGE_OUT);
         Assert.assertEquals(expect, act);

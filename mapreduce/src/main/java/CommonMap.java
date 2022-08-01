@@ -1,6 +1,6 @@
 import com.alibaba.fastjson.JSON;
-import common.KeyValue;
 import common.FileUtil;
+import common.KeyValue;
 import func.MapFunc;
 import java.util.List;
 import util.LogUtil;
@@ -18,7 +18,7 @@ public class CommonMap {
             String key = p.getKey(), tmPath = tempFilePath(workerId, key, nReduce);
             FileUtil.append(tmPath, JSON.toJSONString(p));
         });
-        LogUtil.log("ok to do map");
+        LogUtil.log("ok to do map for id: " + workerId);
     }
 
     /**
@@ -28,7 +28,7 @@ public class CommonMap {
      * @return
      */
     private Integer hash(String key, Integer nReduce) {
-        return key.hashCode() % nReduce;
+        return Math.abs(key.hashCode()) % nReduce;
     }
 
     /**

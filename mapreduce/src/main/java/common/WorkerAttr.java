@@ -6,8 +6,6 @@
 
 package common;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,15 +23,7 @@ public class WorkerAttr {
     private Integer taskType;
     private Integer id;
     private Integer port;
-    private String mapFile ;
-
-    public Boolean mapDone() {
-        return Cons.TASK_TYPE_MAP.equals(taskType) && Cons.TASK_STATUS_DONE.equals(status);
-    }
-
-    public Boolean reduceDone() {
-        return Cons.TASK_TYPE_REDUCE.equals(taskType) && Cons.TASK_STATUS_DONE.equals(status);
-    }
+    private String mapFile;
 
     public static WorkerAttr idleMapper(Integer id) {
         WorkerAttr workerAttr = new WorkerAttr();
@@ -49,5 +39,13 @@ public class WorkerAttr {
         workerAttr.setTaskType(Cons.TASK_TYPE_REDUCE);
         workerAttr.setStatus(Cons.TASK_STATUS_TODO);
         return workerAttr;
+    }
+
+    public Boolean mapDone() {
+        return Cons.TASK_TYPE_MAP.equals(taskType) && Cons.TASK_STATUS_DONE.equals(status);
+    }
+
+    public Boolean reduceDone() {
+        return Cons.TASK_TYPE_REDUCE.equals(taskType) && Cons.TASK_STATUS_DONE.equals(status);
     }
 }

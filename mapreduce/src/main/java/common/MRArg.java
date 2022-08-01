@@ -6,12 +6,23 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class MRArg {
+
     private Integer workerType;
     private Integer workerId;
     private Integer mapNum;
     private Integer reduceNum;
     private String jobFile;
     private String reduceOutFile;
+    private Boolean done = false;
+
+    public MRArg(MRTask mrTask) {
+        this.workerId = mrTask.getId();
+        this.workerType = mrTask.getTaskType();
+        this.jobFile = mrTask.getFile();
+        this.reduceNum = mrTask.getReduceNum();
+        this.mapNum = mrTask.getMapNum();
+        this.reduceOutFile = mrTask.getReduceOutFile();
+    }
 
     public static MRArg mapWork(Integer workerId, Integer reduceNum, String jobFile) {
         MRArg mrArg = new MRArg();
@@ -32,7 +43,10 @@ public class MRArg {
         return mrArg;
     }
 
-    public static MRArg empty() {
-        return new MRArg();
+
+    public static MRArg empty(Boolean done) {
+        MRArg mrArg = new MRArg();
+        mrArg.setDone(done);
+        return mrArg;
     }
 }
