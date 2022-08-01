@@ -18,13 +18,14 @@ import java.util.concurrent.CountDownLatch;
 public class Distributed {
 
     public List<Thread> workerThreads = new ArrayList<>();
+    public List<Worker> workers = new ArrayList<>();
 
     public void run(MapFunc mapFunc, ReduceFunc reduceFunc, List<String> paths,
         Integer reduceNum) throws Exception {
         Master master = new Master(paths, reduceNum);
         master.setPort(Cons.MASTER_HOST);
         final CountDownLatch countDownLatch = master.getCountDownLatch();
-        master.serve();
+        master.run();
 
         for (int i = 0; i < paths.size(); i++) {
             final Worker worker = newWorker();
@@ -33,6 +34,7 @@ public class Distributed {
             };
             Thread t = new Thread(runnable);
             workerThreads.add(t);
+            workers.add(worker);
             t.start();
         }
         countDownLatch.await();

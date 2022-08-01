@@ -7,11 +7,8 @@
 package rpc.io;
 
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import util.LogUtil;
 
 /**
  * @author gusu
@@ -21,11 +18,5 @@ public class SampleServer extends RpcNode {
 
     public Map foo(String s) {
         return new HashMap(1);
-    }
-
-    public Set shutDown(String name) {
-        shutDownServer();
-        LogUtil.log("interrupted : " + name);
-        return Collections.emptySet();
     }
 }

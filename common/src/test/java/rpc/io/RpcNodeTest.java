@@ -11,15 +11,21 @@ public class RpcNodeTest {
     public void testCallMethod() throws Exception {
         SampleServer sampleServer1 = new SampleServer();
         SampleServer sampleServer2 = new SampleServer();
-        sampleServer1.serve();
-        sampleServer2.serve();
+        Runnable run = () -> {
+            try {
+                sampleServer2.serve();
+            } catch (Exception e) {
+            }
+        };
+        Thread thread = new Thread(run);
+        thread.start();
         Object r = sampleServer1
             .call(sampleServer2.getPort(), "foo", new Object[]{"1"});
         Assert.assertEquals(sampleServer2.foo("1"), JSON.parseObject(r.toString(), Map.class));
-        sampleServer2.shutDown("xxxx");
+        sampleServer2.shutDownServer();
         r = sampleServer1
             .call(sampleServer2.getPort(), "foo", new Object[]{"1"});
-        Assert.assertEquals(null, JSON.parseObject(r.toString(), Map.class));
+        Assert.assertEquals(sampleServer2.foo("1"), JSON.parseObject(r.toString(), Map.class));
     }
 
 

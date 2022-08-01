@@ -54,8 +54,9 @@ public class MRWordCountTest {
         Distributed distributed = new Distributed();
         Runnable r = () -> {
             try {
-                Thread.sleep(100L);
+                Thread.sleep(1000L);
                 distributed.workerThreads.get(2).interrupt();
+                distributed.workers.get(2).shutDown("xxx");
             } catch (Exception e) {
             }
         };

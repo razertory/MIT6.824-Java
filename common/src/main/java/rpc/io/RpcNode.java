@@ -19,10 +19,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import java.lang.reflect.Method;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import rpc.common.RpcDecoder;
 import rpc.common.RpcEncoder;
 import rpc.common.RpcEncoder.JSONRpcSerializer;
@@ -68,6 +71,8 @@ public class RpcNode {
                 ChannelPipeline pipeline = nioSocketChannel.pipeline();
                 pipeline.addFirst(new StringEncoder());
                 pipeline.addLast(new RpcDecoder(RpcRequest.class, new JSONRpcSerializer()));
+//                pipeline.addLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS));
+//                pipeline.addLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
                 pipeline.addLast(new ChannelInboundHandlerAdapter() {
                     @Override
                     public void channelRead(ChannelHandlerContext ctx, Object o)
@@ -116,7 +121,7 @@ public class RpcNode {
             return ret;
         } catch (Exception e) {
             LogUtil.log("fail to call err, " + e);
-            return "";
+            return null;
         }
     }
 

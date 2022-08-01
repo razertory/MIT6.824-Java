@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CountDownLatch;
 import rpc.io.RpcNode;
+import util.LogUtil;
 
 
 /**
@@ -34,6 +35,29 @@ public class Master extends RpcNode {
     }
 
     private CountDownLatch countDownLatch = new CountDownLatch(1);
+
+    public void run() throws Exception {
+        serve();
+        checkWorkers();
+    }
+
+    private void checkWorkers() {
+        Runnable runnable = () -> {
+            while (true) {
+                for (Integer port : workerPorts) {
+                    Object ret = call(port, "rpcPing", new Object[]{port + ""});
+                    if (ret == null) {
+                        LogUtil.log("ok to find fail worker");
+                    }
+                }
+                try {
+                    Thread.sleep(1000L);
+                } catch (Exception e) {
+                }
+            }
+        };
+        new Thread(runnable).start();
+    }
 
     public Master(List<String> files, Integer reduceNum) {
         this.reduceNum = reduceNum;
