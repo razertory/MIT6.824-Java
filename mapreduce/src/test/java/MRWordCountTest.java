@@ -44,19 +44,42 @@ public class MRWordCountTest {
     }
 
     /**
-     * 随机失败 N 个 worker
+     * 失败 1 个 worker
      *
      * @throws Exception
      */
     @Test
-    public void testWordCountDistributedWithFail() throws Exception {
+    public void testWordCountDistributedWithOneFail() throws Exception {
         WordCount wordCount = new WordCount();
         Distributed distributed = new Distributed();
         Runnable r = () -> {
             try {
                 Thread.sleep(1000L);
                 distributed.workerThreads.get(2).interrupt();
-                distributed.workers.get(2).shutDown("xxx");
+                distributed.workers.get(2).shutDown("this is a test shutDown");
+            } catch (Exception e) {
+            }
+        };
+        new Thread(r).start();
+        distributed.run(wordCount.mapFunc, wordCount.reduceFunc, paths, 4);
+        compareOutFile();
+    }
+
+    /**
+     * 失败多个 workers
+     * @throws Exception
+     */
+    @Test
+    public void testWordCountDistributedWithManyFails() throws Exception {
+        WordCount wordCount = new WordCount();
+        Distributed distributed = new Distributed();
+        Runnable r = () -> {
+            try {
+                Thread.sleep(1000L);
+                distributed.workerThreads.get(2).interrupt();
+                distributed.workers.get(2).shutDown("this is a test shutDown");
+                distributed.workerThreads.get(1).interrupt();
+                distributed.workers.get(1).shutDown("this is a test shutDown");
             } catch (Exception e) {
             }
         };

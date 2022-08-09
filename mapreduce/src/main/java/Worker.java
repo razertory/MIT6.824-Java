@@ -28,7 +28,7 @@ public class Worker extends RpcNode {
                 commonReduce.doReduce(reduceFunc, mrArg.getWorkerId(), mrArg.getMapNum(),
                     mrArg.getReduceOutFile());
             }
-            mrArg = doneTask(mrArg.getWorkerId(), mrArg.getWorkerType());
+            mrArg = doneTask(mrArg.getWorkerId(), mrArg.getWorkerType(), getPort());
             try {
                 Thread.sleep(50L);
             } catch (Exception e) {
@@ -44,9 +44,10 @@ public class Worker extends RpcNode {
         return arg;
     }
 
-    private MRArg doneTask(Integer id, Integer type) {
+    private MRArg doneTask(Integer id, Integer type, Integer port) {
         return JSON.parseObject(
-            call(Cons.MASTER_HOST, "doneTask", new Object[]{id, type}).toString(), MRArg.class);
+            call(Cons.MASTER_HOST, "doneTask", new Object[]{id, type, port}).toString(),
+            MRArg.class);
     }
 
     public String rpcPing(String param) {

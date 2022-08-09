@@ -6,8 +6,10 @@
 import common.Cons;
 import common.MRArg;
 import common.MRTask;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CountDownLatch;
@@ -24,7 +26,7 @@ public class Master extends RpcNode {
 
     private List<String> files;
     private Integer reduceNum;
-    private Set<Integer> workerPorts = new HashSet<>();
+    private Map<Integer, MRTask> portTask = new HashMap<>();
     private ConcurrentLinkedDeque<MRTask> tasks = new ConcurrentLinkedDeque<>();
     private ConcurrentLinkedDeque<MRTask> reduceTasks = new ConcurrentLinkedDeque<>();
     private Set<String> reduceOutFiles = new HashSet<>();
@@ -44,11 +46,29 @@ public class Master extends RpcNode {
     private void checkWorkers() {
         Runnable runnable = () -> {
             while (true) {
-                for (Integer port : workerPorts) {
+                Integer errPort = null;
+                for (Integer port : portTask.keySet()) {
                     Object ret = call(port, "rpcPing", new Object[]{port + ""});
                     if (ret == null) {
-                        LogUtil.log("ok to find fail worker");
+                        LogUtil.log(
+                            "ok to find fail worker on port, " + port + "task: " + portTask.get(
+                                port));
+                        errPort = port;
+                        break;
                     }
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (Exception e) {
+                    }
+                }
+                if (errPort != null) {
+                    MRTask mrTask = portTask.get(errPort);
+                    if (mrTask.getTaskType().equals(Cons.TASK_TYPE_MAP)) {
+                        tasks.add(mrTask);
+                    } else {
+                        reduceTasks.add(mrTask);
+                    }
+                    portTask.remove(errPort);
                 }
                 try {
                     Thread.sleep(1000L);
@@ -80,12 +100,11 @@ public class Master extends RpcNode {
      * @return
      */
     public synchronized MRArg requireTask(Integer port) {
-        workerPorts.add(port);
         if (tasks.isEmpty()) {
             return MRArg.empty(allFinished());
         }
         MRTask mrTask = tasks.poll();
-        return new MRArg(mrTask);
+        return newMRTask(mrTask, port);
     }
 
     /**
@@ -95,24 +114,24 @@ public class Master extends RpcNode {
      * @param taskType
      * @return
      */
-    public synchronized MRArg doneTask(Integer workerId, final Integer taskType) {
+    public synchronized MRArg doneTask(Integer workerId, final Integer taskType, Integer port) {
         if (taskType.equals(Cons.TASK_TYPE_MAP)) {
             doneMapTasks.add(workerId);
-        }
-        if (!tasks.isEmpty()) {
-            MRTask mrTask = tasks.poll();
-            return new MRArg(mrTask);
         }
         if (taskType.equals(Cons.TASK_TYPE_REDUCE)) {
             reduceOutFiles.add(CommonFile.reduceOutFile(workerId));
         }
-        if (allFinished()) {
-            return MRArg.empty(true);
+        if (!tasks.isEmpty()) {
+            MRTask mrTask = tasks.poll();
+            return newMRTask(mrTask, port);
         }
         Boolean mapDone = doneMapTasks.size() == files.size();
-        if (!reduceTasks.isEmpty() && mapDone) {
+        if (!mapDone) {
+            return MRArg.empty(false);
+        }
+        if (!reduceTasks.isEmpty()) {
             MRTask mrTask = reduceTasks.poll();
-            return new MRArg(mrTask);
+            return newMRTask(mrTask, port);
         }
         return MRArg.empty(allFinished());
     }
@@ -123,5 +142,10 @@ public class Master extends RpcNode {
             countDownLatch.countDown();
         }
         return done;
+    }
+
+    private MRArg newMRTask(MRTask mrTask, Integer port) {
+        portTask.put(port, mrTask);
+        return new MRArg(mrTask);
     }
 }
