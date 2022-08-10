@@ -1,10 +1,10 @@
 import biz.WordCount;
-import util.FileUtil;
 import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import util.FileUtil;
 
 public class MRWordCountTest {
 
@@ -38,6 +38,7 @@ public class MRWordCountTest {
 
     /**
      * 分布式测试
+     *
      * @throws Exception
      */
     @Test
@@ -71,6 +72,7 @@ public class MRWordCountTest {
 
     /**
      * 失败多个 workers
+     *
      * @throws Exception
      */
     @Test

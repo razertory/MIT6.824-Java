@@ -1,5 +1,4 @@
 import com.alibaba.fastjson.JSON;
-import util.FileUtil;
 import common.KeyValue;
 import func.ReduceFunc;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import util.FileUtil;
 import util.LogUtil;
 
 /**

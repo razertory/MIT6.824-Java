@@ -10,7 +10,6 @@ import func.ReduceFunc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import util.LogUtil;
 
 /**
  * @author gusu

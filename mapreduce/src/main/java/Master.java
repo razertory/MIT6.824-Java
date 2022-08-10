@@ -31,12 +31,26 @@ public class Master extends RpcNode {
     private ConcurrentLinkedDeque<MRTask> reduceTasks = new ConcurrentLinkedDeque<>();
     private Set<String> reduceOutFiles = new HashSet<>();
     private Set<Integer> doneMapTasks = new HashSet<>();
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
+
+    public Master(List<String> files, Integer reduceNum) {
+        this.reduceNum = reduceNum;
+        this.files = files;
+        for (int i = 0; i < files.size(); i++) {
+            String file = files.get(i);
+            tasks.offer(new MRTask(i, Cons.TASK_TYPE_MAP, Cons.TASK_STATUS_TODO, file, reduceNum,
+                files.size(), ""));
+        }
+        for (int i = 0; i < reduceNum; i++) {
+            reduceTasks.offer(
+                new MRTask(i, Cons.TASK_TYPE_REDUCE, Cons.TASK_STATUS_TODO, "", reduceNum,
+                    files.size(), CommonFile.reduceOutFile(i)));
+        }
+    }
 
     public CountDownLatch getCountDownLatch() {
         return countDownLatch;
     }
-
-    private CountDownLatch countDownLatch = new CountDownLatch(1);
 
     public void run() throws Exception {
         serve();
@@ -77,21 +91,6 @@ public class Master extends RpcNode {
             }
         };
         new Thread(runnable).start();
-    }
-
-    public Master(List<String> files, Integer reduceNum) {
-        this.reduceNum = reduceNum;
-        this.files = files;
-        for (int i = 0; i < files.size(); i++) {
-            String file = files.get(i);
-            tasks.offer(new MRTask(i, Cons.TASK_TYPE_MAP, Cons.TASK_STATUS_TODO, file, reduceNum,
-                files.size(), ""));
-        }
-        for (int i = 0; i < reduceNum; i++) {
-            reduceTasks.offer(
-                new MRTask(i, Cons.TASK_TYPE_REDUCE, Cons.TASK_STATUS_TODO, "", reduceNum,
-                    files.size(), CommonFile.reduceOutFile(i)));
-        }
     }
 
     /**
