@@ -1,5 +1,5 @@
 import com.alibaba.fastjson.JSON;
-import common.FileUtil;
+import util.FileUtil;
 import common.KeyValue;
 import func.ReduceFunc;
 import java.nio.charset.StandardCharsets;

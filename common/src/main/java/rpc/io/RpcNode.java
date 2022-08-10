@@ -78,7 +78,7 @@ public class RpcNode {
             }
         });
         serverBootstrap.bind(port).sync();
-        LogUtil.log("server started on port: " + port);
+        LogUtil.log("server started on port:", port);
     }
 
     private Object invoke(Object o) throws Exception {
@@ -112,8 +112,9 @@ public class RpcNode {
         try {
             bind(rpcChannel);
             Object ret = executorService.submit(rpcChannel).get();
-            LogUtil.log("method: " + request.getMethodName() + "params: " + request.getParameters()
-                + " resp: " + ret);
+            LogUtil.log("method: ", request.getMethodName(), "params: " + request.getParameters()
+                , " resp: ", ret);
+
             return ret;
         } catch (Exception e) {
             LogUtil.log("fail to call err, " + e);

@@ -1,5 +1,5 @@
 import biz.WordCount;
-import common.FileUtil;
+import util.FileUtil;
 import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +36,10 @@ public class MRWordCountTest {
         compareOutFile();
     }
 
+    /**
+     * 分布式测试
+     * @throws Exception
+     */
     @Test
     public void testWordCountDistributed() throws Exception {
         WordCount wordCount = new WordCount();

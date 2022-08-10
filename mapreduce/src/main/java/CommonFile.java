@@ -1,5 +1,4 @@
 import com.alibaba.fastjson.JSON;
-import common.FileUtil;
 import common.KeyValue;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -7,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import util.FileUtil;
+import util.LogUtil;
 
 public class CommonFile {
 
@@ -43,5 +44,6 @@ public class CommonFile {
             FileUtil.append(MR_MERGE_OUT,
                 key + ": " + kvs.get(key));
         });
+        LogUtil.log("ok to merge all files");
     }
 }

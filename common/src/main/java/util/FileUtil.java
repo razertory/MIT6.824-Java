@@ -4,7 +4,7 @@
  * GUSU PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
  */
 
-package common;
+package util;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +15,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import util.LogUtil;
 
 /**
  * @author gusu
@@ -63,7 +62,8 @@ public class FileUtil {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.APPEND);
         } catch (Exception e) {
-            LogUtil.log("fail to write file, " + path);
+            LogUtil.log("fail to write file, " + path + "err: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -74,7 +74,7 @@ public class FileUtil {
                 cnt.getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.CREATE);
         } catch (Exception e) {
-            LogUtil.log("fail to write file, " + path);
+            LogUtil.log("fail to write file, " + path + "err: " + e);
         }
     }
 
