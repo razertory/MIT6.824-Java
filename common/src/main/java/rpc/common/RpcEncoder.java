@@ -1,8 +1,3 @@
-/*
- * RpcEncoder.java
-
- */
-
 package rpc.common;
 
 import com.alibaba.fastjson.JSON;

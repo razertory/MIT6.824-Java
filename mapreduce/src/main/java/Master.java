@@ -1,8 +1,3 @@
-/*
- * Master.java
-
- */
-
 import common.Cons;
 import common.MRArg;
 import common.MRTask;
@@ -22,7 +17,6 @@ import util.LogUtil;
  * @date 2021/1/1
  */
 public class Master extends RpcNode {
-
 
     private List<String> files;
     private Integer reduceNum;
